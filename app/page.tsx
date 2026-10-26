@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 
 type Task = {
   id: number;
@@ -11,7 +11,8 @@ type Task = {
 export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState("");
-
+  const [filter, setFilter] = useState<"all" | "active" | "done">("all");   
+ 
   function addTask() {
     if (!title.trim()) return;
     setTasks([...tasks, { id: Date.now(), title: title.trim(), done: false }]);
