@@ -8,17 +8,32 @@ type TaskItemProps = {
 
 export default function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
   return (
-    <li className="flex items-center gap-2">
+    <li className="group flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 transition hover:border-indigo-200 hover:shadow-md">
       <input
         type="checkbox"
         checked={task.done}
         onChange={() => onToggle(task.id)}
+        className="h-5 w-5 cursor-pointer accent-indigo-600"
       />
-      <div className="flex-1">
-        <span className={task.done ? "line-through" : ""}>{task.title}</span>
-        <p className="text-xs text-gray-500">{task.createdAt}</p>
+      <div className="min-w-0 flex-1">
+        <p
+          className={
+            task.done
+              ? "truncate text-slate-400 line-through"
+              : "truncate font-medium text-slate-800"
+          }
+        >
+          {task.title}
+        </p>
+        <p className="text-xs text-slate-400">{task.createdAt}</p>
       </div>
-      <button onClick={() => onDelete(task.id)}>Delete</button>
+      <button
+        onClick={() => onDelete(task.id)}
+        aria-label="Delete task"
+        className="rounded-md px-2 py-1 text-slate-400 transition hover:bg-red-50 hover:text-red-500"
+      >
+        ✕
+      </button>
     </li>
   );
 }

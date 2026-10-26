@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import type { Task } from "@/types";
-
-const tasks: Task[] = [];
+import { tasks } from "@/lib/store";
 
 export async function GET() {
   return NextResponse.json(tasks);

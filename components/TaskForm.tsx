@@ -16,15 +16,18 @@ export default function TaskForm({ onAdd }: TaskFormProps) {
   }
 
   return (
-    <div className="mb-4 flex gap-2">
+    <div className="mb-5 flex gap-2">
       <input
-        className="flex-1 rounded border p-2 text-black"
+        className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        placeholder="New task..."
+        onKeyDown={(e) => {
+          if (e.key === "Enter") handleAdd();
+        }}
+        placeholder="What needs to be done?"
       />
       <button
-        className="rounded bg-blue-600 px-4 py-2 text-white"
+        className="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white transition hover:bg-indigo-700 active:scale-95"
         onClick={handleAdd}
       >
         Add
