@@ -1,68 +1,86 @@
-"use client";
+  "use client";
 
-import { use, useState } from "react";
+  import { useState } from "react";
+  import type { Task } from "@/types";
+  import TaskForm from "@/components/TaskForm";
+  import TaskItem from "@/components/TaskItem";
 
-type Task = {
-  id: number;
-  title: string;
-  done: boolean;
-};
+  export default function Home() {
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [filter, setFilter] = useState<"all" | "active" | "done">("all");
 
-export default function Home() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [title, setTitle] = useState("");
-  const [filter, setFilter] = useState<"all" | "active" | "done">("all");   
- 
-  function addTask() {
-    if (!title.trim()) return;
-    setTasks([...tasks, { id: Date.now(), title: title.trim(), done: false }]);
-    setTitle("");
-  }
+    function addTask(title: string) {
+      const now = new Date();
+      setTasks([
+        ...tasks,
+        {
+          id: now.getTime(),
+          title,
+          done: false,
+          createdAt: now.toLocaleString("id-ID", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        },
+      ]);
+    }
 
-  function toggleTask(id: number) {
-    setTasks(tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
-  }
+    function toggleTask(id: number) {
+      setTasks(tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
+    }
 
-  function deleteTask(id: number) {
-    setTasks(tasks.filter((t) => t.id !== id));
-  }
+    function deleteTask(id: number) {
+      setTasks(tasks.filter((t) => t.id !== id));
+    }
 
-  return (
-    <main className="mx-auto max-w-md p-8">
-      <h1 className="mb-4 text-2xl font-bold">Task Manager</h1>
+    const visibleTasks = tasks.filter((t) => {
+      if (filter === "active") return !t.done;
+      if (filter === "done") return t.done;
+      return true;
+    });
 
-      <div className="mb-4 flex gap-2">
-        <input
-          className="flex-1 rounded border p-2 text-black"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="New task..."
-        />
-        <button
-          className="rounded bg-blue-600 px-4 py-2 text-white"
-          onClick={addTask}
-        >
-          Add
-        </button>
-      </div>
+    return (
+      <main className="mx-auto max-w-md p-8">
+        <h1 className="mb-4 text-2xl font-bold">Task Manager</h1>
 
-      {tasks.length === 0 && <p>No tasks yet.</p>}
+        <TaskForm onAdd={addTask} />
 
-      <ul className="space-y-2">
-        {tasks.map((t) => (
-          <li key={t.id} className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={t.done}
-              onChange={() => toggleTask(t.id)}
+        <div className="mb-4 flex gap-2">
+          <button
+            className={filter === "all" ? "font-bold underline" : ""}
+            onClick={() => setFilter("all")}
+          >
+            All
+          </button>
+          <button
+            className={filter === "active" ? "font-bold underline" : ""}
+            onClick={() => setFilter("active")}
+          >
+            Active
+          </button>
+          <button
+            className={filter === "done" ? "font-bold underline" : ""}
+            onClick={() => setFilter("done")}
+          >
+            Done
+          </button>
+        </div>
+
+        {visibleTasks.length === 0 && <p>No tasks yet.</p>}
+
+        <ul className="space-y-2">
+          {visibleTasks.map((t) => (
+            <TaskItem
+              key={t.id}
+              task={t}
+              onToggle={toggleTask}
+              onDelete={deleteTask}
             />
-            <span className={t.done ? "flex-1 line-through" : "flex-1"}>
-              {t.title}
-            </span>
-            <button onClick={() => deleteTask(t.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
-    </main>
-  );
-}
+          ))}
+        </ul>
+      </main>
+    );
+  }
